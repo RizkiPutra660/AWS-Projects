@@ -44,8 +44,14 @@ export function Projects() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-          {projects.map((project, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-xl transition-shadow">
+          {projects.map((project, index) => {
+            const isLast = index === projects.length - 1;
+            return (
+              <div
+                key={index}
+                className={isLast ? "md:col-span-2 md:justify-self-center lg:col-start-2" : undefined}
+              >
+                <Card className="overflow-hidden hover:shadow-xl transition-shadow">
               <div className="aspect-video overflow-hidden bg-gray-200">
                 <ImageWithFallback
                   src={project.image}
@@ -75,8 +81,10 @@ export function Projects() {
                   </a>
                 </div>
               </div>
-            </Card>
-          ))}
+                </Card>
+              </div>
+            );
+          })}
         </div>
       </div>
     </section>
