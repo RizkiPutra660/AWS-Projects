@@ -1,42 +1,49 @@
 import { Card } from './ui/card';
-import { Badge } from './ui/badge';
 import { Briefcase, GraduationCap, Award } from 'lucide-react';
 
 export function CV() {
   const experience = [
     {
-      title: 'Senior Full Stack Developer',
-      company: 'Tech Innovation Inc.',
-      period: '2022 - Present',
-      description: 'Leading development of scalable web applications using React, Node.js, and AWS. Mentoring junior developers and implementing best practices.',
+      title: 'Software Intern',
+      company: 'Auckland ICT Graduate School',
+      period: '2025 - Present',
+      description: 'Developing AI Integrated Software Quality Assurance Web App using React Frontend and Flask Backend with SQL Database. Working with developers with diverse backgrounds and implementing best practices.',
     },
     {
-      title: 'Full Stack Developer',
-      company: 'Digital Solutions Co.',
-      period: '2020 - 2022',
-      description: 'Developed and maintained multiple client projects using modern JavaScript frameworks. Improved application performance by 40%.',
+      title: 'Network Engineer',
+      company: 'PT. Bank Central Asia Tbk',
+      period: '2021 - 2024',
+      description: 'Managed and maintained network availability and data center network devices for the company’s internal applications. Collaborated in Network Reliability team that is responsible for monitoring and analysing devices’ utilization, which is useful for capacity planning.',
     },
     {
-      title: 'Frontend Developer',
-      company: 'StartUp Studio',
-      period: '2018 - 2020',
-      description: 'Built responsive web applications with React and TypeScript. Collaborated with designers to implement pixel-perfect UIs.',
+      title: 'Research Intern',
+      company: 'PT. Kreasi Rekayasa Indonesia',
+      period: '2020',
+      description: 'Built Twitter Sentiment Analysis web application using Flask Framework. Created Support Vector Machine (SVM) model which achieved the highest F-score of 0,87.',
     },
   ];
 
   const education = [
     {
-      degree: 'Bachelor of Science in Computer Science',
-      school: 'University of Technology',
-      period: '2014 - 2018',
-      description: 'Focused on software engineering, algorithms, and data structures.',
+      degree: 'Master of Information Technology',
+      school: 'University of Auckland',
+      period: '2024 - 2026',
+      description: 'Focused on software and web development, data science, and cloud computing.',
+    },
+    {
+      degree: 'Bachelor of Science in Telecomunications Engineering',
+      school: 'Bandung Institute of Technology',
+      period: '2017 - 2021',
+      description: 'Thesis: Front-end Subsystem Design for Vehicle Registration Certificate Application with Image Encryption',
     },
   ];
 
-  const skills = [
-    'JavaScript', 'TypeScript', 'React', 'Node.js', 'Next.js',
-    'Tailwind CSS', 'MongoDB', 'PostgreSQL', 'AWS', 'Docker',
-    'Git', 'REST APIs', 'GraphQL', 'Figma', 'UI/UX Design'
+  const certifications = [
+    {
+      name: 'AWS Certified Cloud Practitioner',
+      issuer: 'Amazon Web Services',
+      date: '2025',
+    },
   ];
 
   return (
@@ -88,17 +95,23 @@ export function CV() {
           </div>
         </div>
 
-        {/* Skills */}
+        {/* Certifications */}
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <Award className="text-blue-600" size={28} />
-            <h3 className="text-3xl">Skills</h3>
+            <h3 className="text-3xl">Certifications</h3>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {skills.map((skill, index) => (
-              <Badge key={index} variant="secondary" className="px-4 py-2 text-base">
-                {skill}
-              </Badge>
+          <div className="space-y-4">
+            {certifications.map((cert, index) => (
+              <Card key={index} className="p-6">
+                <div className="flex flex-col md:flex-row md:items-start md:justify-between">
+                  <div className="flex-1">
+                    <h4 className="text-lg font-semibold">{cert.name}</h4>
+                    <p className="text-blue-600">{cert.issuer}</p>
+                  </div>
+                  <p className="text-gray-600 mt-2 md:mt-0">{cert.date}</p>
+                </div>
+              </Card>
             ))}
           </div>
         </div>
