@@ -1,33 +1,37 @@
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
-import { ExternalLink, Github } from 'lucide-react';
+import { Github } from 'lucide-react';
 import { ImageWithFallback } from './utils/ImageWithFallback';
 
 export function Projects() {
   const projects = [
     {
-      title: 'E-Commerce Platform',
-      description: 'A full-featured e-commerce platform with shopping cart, payment integration, and admin dashboard. Built with Next.js and Stripe.',
-      image: 'https://images.unsplash.com/photo-1727407209320-1fa6ae60ee05?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxlY29tbWVyY2UlMjBzaG9wcGluZ3xlbnwxfHx8fDE3NjE1MzY3MzV8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      tags: ['React', 'Next.js', 'Stripe', 'Tailwind CSS'],
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
+      title: 'COVID-19 Detection in Noisy Audio Environments',
+      description: 'A deep learning pipeline for detecting COVID-19 from cough audio recordings, combining U-Net-based audio denoising with machine learning classifiers (SVM, MLP). The project addresses the challenge of poor-quality audio recordings by first denoising the audio, then performing classification on the cleaned signals.',
+      image: '/projects/covid.png',
+      tags: ['Torch', 'Numpy', 'Pandas', 'Matplotlib', 'Python'],
+      githubUrl: 'https://github.com/RizkiPutra660/COVID-19-Detection-in-Noisy-Audio',
     },
     {
-      title: 'Task Management App',
-      description: 'Collaborative task management application with real-time updates, drag-and-drop functionality, and team collaboration features.',
-      image: 'https://images.unsplash.com/photo-1593720213681-e9a8778330a7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3ZWIlMjBkZXZlbG9wbWVudCUyMGNvZGluZ3xlbnwxfHx8fDE3NjE1NzQ2Nzd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      tags: ['React', 'Node.js', 'MongoDB', 'Socket.io'],
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
+      title: 'Personal Blogging System',
+      description: 'A comprehensive personal article blogging system that enables users to create accounts, write articles, and engage through comments. The system features a web application built using HTML, CSS, Svelte, JavaScript, Node.js, and Express.js, with SQL database, complemented by a Java-based desktop admin interface.',
+      image: '/projects/blog.png',
+      tags: ['Svelte', 'Node.js', 'Express.js', 'SQL', 'Java', 'JavaScript'],
+      githubUrl: 'https://github.com/RizkiPutra660/Cheery-Cats-Anime',
     },
     {
-      title: 'Mobile Fitness Tracker',
-      description: 'Cross-platform mobile app for tracking workouts, nutrition, and fitness goals. Features include progress charts and social sharing.',
-      image: 'https://images.unsplash.com/photo-1609921212029-bb5a28e60960?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjBhcHAlMjBkZXNpZ258ZW58MXx8fHwxNzYxNTMwMDMzfDA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral',
-      tags: ['React Native', 'Firebase', 'Redux', 'Charts'],
-      liveUrl: 'https://example.com',
-      githubUrl: 'https://github.com',
+      title: 'Image Encryption Implementation for Vehicle Registration Certificate Extension Feature Development Based on Mobile Application',
+      description: 'An Android-based application built with Flutter that is used to extend Vehicle Registration Certificates. The data, especially images sent to the MongoDB database, are encrypted using Henon and Arnold\'s cat map algorithm.',
+      image: '/projects/stnk.png',
+      tags: ['Flutter', 'MongoDB', 'Image Encryption', 'Android', 'Python'],
+      githubUrl: 'https://github.com/RizkiPutra660/AplikasiPerpanjanganSTNK',
+    },
+    {
+      title: 'Sentiment-Analysis-Twitter-Indonesia',
+      description: 'A web-based application built with the Flask framework that analyzes Twitter’s user opinion about certain topics using the Support Vector Machine algorithm.',
+      image: '/projects/twitter.png',
+      tags: ['Flask', 'Python'],
+      githubUrl: 'https://github.com/RizkiPutra660/Sentiment-Analysis-Twitter-Indonesia',
     },
   ];
 
@@ -60,15 +64,6 @@ export function Projects() {
                   ))}
                 </div>
                 <div className="flex gap-4">
-                  <a
-                    href={project.liveUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-blue-600 hover:text-blue-700 transition-colors"
-                  >
-                    <ExternalLink size={18} />
-                    <span>Live Demo</span>
-                  </a>
                   <a
                     href={project.githubUrl}
                     target="_blank"
