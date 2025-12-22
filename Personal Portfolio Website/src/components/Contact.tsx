@@ -1,24 +1,18 @@
 import { Card } from './ui/card';
-import { Mail, Phone, MapPin, Github, Linkedin, Twitter } from 'lucide-react';
+import { Mail, MapPin, Github, Linkedin } from 'lucide-react';
 
 export function Contact() {
   const contactInfo = [
     {
       icon: Mail,
       label: 'Email',
-      value: 'john.doe@email.com',
-      link: 'mailto:john.doe@email.com',
-    },
-    {
-      icon: Phone,
-      label: 'Phone',
-      value: '+1 (555) 123-4567',
-      link: 'tel:+15551234567',
+      value: 'mathallahrizkip@gmail.com',
+      link: 'mailto:mathallahrizkip@gmail.com',
     },
     {
       icon: MapPin,
       label: 'Location',
-      value: 'San Francisco, CA',
+      value: 'Auckland, New Zealand',
       link: null,
     },
   ];
@@ -27,17 +21,12 @@ export function Contact() {
     {
       icon: Github,
       label: 'GitHub',
-      url: 'https://github.com',
+      url: 'https://github.com/RizkiPutra660',
     },
     {
       icon: Linkedin,
       label: 'LinkedIn',
-      url: 'https://linkedin.com',
-    },
-    {
-      icon: Twitter,
-      label: 'Twitter',
-      url: 'https://twitter.com',
+      url: 'https://linkedin.com/in/athallahrizki',
     },
   ];
 
@@ -50,7 +39,7 @@ export function Contact() {
         </p>
 
         <div className="max-w-4xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
             {contactInfo.map((info, index) => {
               const Icon = info.icon;
               const content = (
