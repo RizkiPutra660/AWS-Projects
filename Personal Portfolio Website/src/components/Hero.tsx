@@ -12,7 +12,7 @@ export function Hero() {
             Data Science, Artificial Intelligence, and Cloud Computing Enthusiast
           </p>
           <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">
-            Passionate about building intelligent, data-driven solutions that solve real-world problems. With expertise in AI Integrations, Machine Learning Algorithms, AWS Services, and keen on deploying scalable applications.
+            Passionate about building intelligent, data-driven solutions that solve real-world problems. With expertise in AI Integrations, Machine Learning Algorithms, Cloud Services, and keen on deploying scalable applications.
           </p>
           <div className="flex gap-4 justify-center">
             <a href="https://github.com/RizkiPutra660" target="_blank" rel="noopener noreferrer" 

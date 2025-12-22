@@ -5,18 +5,13 @@ export function About() {
         <h2 className="text-4xl text-center mb-12">About Me</h2>
         <div className="max-w-3xl mx-auto">
           <p className="text-lg text-gray-700 mb-6">
-            I'm a passionate full-stack developer with 5+ years of experience building web applications. 
-            I specialize in React, Node.js, and modern web technologies, with a strong focus on creating 
-            intuitive user experiences.
+            I have 2+ years of experience as a Network Engineer. I specialize in Software Defined Networks, Python, and AWS Services with focus on building scalable and reliable systems.
           </p>
           <p className="text-lg text-gray-700 mb-6">
-            My journey in tech started with a fascination for how things work under the hood. This curiosity 
-            has driven me to continuously learn and adapt to new technologies, always striving to write 
-            clean, maintainable code.
+            My journey as an IT student has fostered the curiosity and eagerness to learn and adapt to new technologies continuously. This curiosity led me to develop a passion for new fields, which differs from my previous experience.   
           </p>
           <p className="text-lg text-gray-700">
-            When I'm not coding, you can find me exploring new coffee shops, reading tech blogs, or 
-            contributing to open-source projects.
+            When I'm not coding, you can find me exploring tourism sites, reading detective, mystery, and horror stories, or enjoying musics, movies, and games.
           </p>
         </div>
       </div>
