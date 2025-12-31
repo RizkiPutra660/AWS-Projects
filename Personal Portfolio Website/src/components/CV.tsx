@@ -44,6 +44,11 @@ export function CV() {
       issuer: 'Amazon Web Services',
       date: '2025',
     },
+    {
+      name: 'AWS Certified AI Practitioner',
+      issuer: 'Amazon Web Services',
+      date: '2025',
+    },
   ];
 
   return (

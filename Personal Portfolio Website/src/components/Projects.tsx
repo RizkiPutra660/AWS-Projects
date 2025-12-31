@@ -33,6 +33,13 @@ export function Projects() {
       tags: ['Flask', 'Python'],
       githubUrl: 'https://github.com/RizkiPutra660/Sentiment-Analysis-Twitter-Indonesia',
     },
+    {
+      title: 'AWS Projects',
+      description: 'Collections of my personal projects involving various AWS services',
+      image: '/projects/aws.png',
+      tags: ['AWS Services', 'Cloud Computing'],
+      githubUrl: 'https://github.com/RizkiPutra660/AWS-Projects',
+    },
   ];
 
   return (
