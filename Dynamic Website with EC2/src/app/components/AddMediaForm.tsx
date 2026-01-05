@@ -1,35 +1,87 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, X } from 'lucide-react';
 
 interface AddMediaFormProps {
   onSubmit: (media: {
     title: string;
-    type: 'book' | 'movie' | 'tv-show' | 'game' | 'album';
-    status: 'want-to-consume' | 'consuming' | 'consumed';
+    type: 'book' | 'movie' | 'game';
+    status: 'want-to-read' | 'reading' | 'read' | 'want-to-watch' | 'watching' | 'watched' | 'want-to-play' | 'playing' | 'played';
     rating: number;
     review: string;
     year: number;
+    cover: string;
   }) => void;
   onCancel: () => void;
   initialData?: {
     title: string;
-    type: 'book' | 'movie' | 'tv-show' | 'game' | 'album';
-    status: 'want-to-consume' | 'consuming' | 'consumed';
+    type: 'book' | 'movie' | 'game';
+    status: 'want-to-read' | 'reading' | 'read' | 'want-to-watch' | 'watching' | 'watched' | 'want-to-play' | 'playing' | 'played';
     rating: number;
     review?: string;
     year: number;
+    cover?: string;
   };
 }
 
 export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormProps) {
+  const DEFAULT_COVER_IMAGE = 'https://images.unsplash.com/photo-1506880018603-83d5b814b5a6?w=300&h=450&fit=crop';
+  
   const [title, setTitle] = useState(initialData?.title || '');
-  const [type, setType] = useState<'book' | 'movie' | 'tv-show' | 'game' | 'album'>(initialData?.type || 'book');
-  const [status, setStatus] = useState<'want-to-consume' | 'consuming' | 'consumed'>(initialData?.status || 'want-to-consume');
+  const [type, setType] = useState<'book' | 'movie' | 'game'>(initialData?.type || 'book');
+  const [status, setStatus] = useState<'want-to-read' | 'reading' | 'read' | 'want-to-watch' | 'watching' | 'watched' | 'want-to-play' | 'playing' | 'played'>(initialData?.status || 'want-to-read');
   const [rating, setRating] = useState(initialData?.rating || 3);
   const [hoveredRating, setHoveredRating] = useState(0);
   const [review, setReview] = useState(initialData?.review || '');
   const [year, setYear] = useState(initialData?.year || new Date().getFullYear());
+  const [cover, setCover] = useState(initialData?.cover || '');
   const isEditing = !!initialData;
+
+  // Update form fields when initialData changes (for editing)
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setType(initialData.type);
+      setStatus(initialData.status);
+      setRating(initialData.rating);
+      setReview(initialData.review || '');
+      setYear(initialData.year);
+      setCover(initialData.cover || '');
+    }
+  }, [initialData]);
+
+  // Get status options based on media type
+  const getStatusOptions = () => {
+    switch (type) {
+      case 'book':
+        return [
+          { value: 'want-to-read', label: 'Want to Read' },
+          { value: 'reading', label: 'Currently Reading' },
+          { value: 'read', label: 'Read' }
+        ];
+      case 'movie':
+        return [
+          { value: 'want-to-watch', label: 'Want to Watch' },
+          { value: 'watching', label: 'Currently Watching' },
+          { value: 'watched', label: 'Watched' }
+        ];
+      case 'game':
+        return [
+          { value: 'want-to-play', label: 'Want to Play' },
+          { value: 'playing', label: 'Currently Playing' },
+          { value: 'played', label: 'Played' }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  // Reset status when type changes
+  const handleTypeChange = (newType: 'book' | 'movie' | 'game') => {
+    setType(newType);
+    if (newType === 'book') setStatus('want-to-read');
+    else if (newType === 'movie') setStatus('want-to-watch');
+    else if (newType === 'game') setStatus('want-to-play');
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +92,8 @@ export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormPr
         status,
         rating,
         review: review.trim(),
-        year
+        year,
+        cover: cover.trim() || DEFAULT_COVER_IMAGE
       });
     }
   };
@@ -93,15 +146,13 @@ export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormPr
             <select
               id="type"
               value={type}
-              onChange={(e) => setType(e.target.value as any)}
+              onChange={(e) => handleTypeChange(e.target.value as 'book' | 'movie' | 'game')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white"
               required
             >
               <option value="book">Book</option>
               <option value="movie">Movie</option>
-              <option value="tv-show">TV Show</option>
               <option value="game">Game</option>
-              <option value="album">Album</option>
             </select>
           </div>
 
@@ -117,9 +168,9 @@ export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormPr
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all bg-white"
               required
             >
-              <option value="want-to-consume">Want to Consume</option>
-              <option value="consuming">Currently Consuming</option>
-              <option value="consumed">Consumed</option>
+              {getStatusOptions().map(option => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
             </select>
           </div>
 
@@ -128,51 +179,29 @@ export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormPr
             <label className="block mb-2">
               Rating <span className="text-red-500">*</span>
             </label>
-            <div className="space-y-3">
-              {/* Interactive Star Rating */}
-              <div className="flex items-center gap-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
-                    type="button"
-                    onClick={() => handleStarClick(star)}
-                    onMouseEnter={() => setHoveredRating(star)}
-                    onMouseLeave={() => setHoveredRating(0)}
-                    className="transition-transform hover:scale-110"
-                  >
-                    <Star
-                      className={`w-10 h-10 transition-colors ${
-                        star <= (hoveredRating || rating)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  </button>
-                ))}
-                <span className="ml-2 text-gray-600">
-                  {rating} / 5
-                </span>
-              </div>
-
-              {/* Alternative: Slider */}
-              <div className="pt-2">
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  step="1"
-                  value={rating}
-                  onChange={(e) => setRating(parseInt(e.target.value))}
-                  className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-600"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1 px-1">
-                  <span>1</span>
-                  <span>2</span>
-                  <span>3</span>
-                  <span>4</span>
-                  <span>5</span>
-                </div>
-              </div>
+            {/* Interactive Star Rating */}
+            <div className="flex items-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => handleStarClick(star)}
+                  onMouseEnter={() => setHoveredRating(star)}
+                  onMouseLeave={() => setHoveredRating(0)}
+                  className="transition-transform hover:scale-110"
+                >
+                  <Star
+                    className={`w-10 h-10 transition-colors ${
+                      star <= (hoveredRating || rating)
+                        ? 'fill-yellow-400 text-yellow-400'
+                        : 'text-gray-300'
+                    }`}
+                  />
+                </button>
+              ))}
+              <span className="ml-2 text-gray-600">
+                {rating} / 5
+              </span>
             </div>
           </div>
 
@@ -190,6 +219,30 @@ export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormPr
               min="1900"
               max={new Date().getFullYear() + 5}
             />
+          </div>
+
+          {/* Cover URL Field */}
+          <div>
+            <label htmlFor="cover" className="block mb-2">
+              Cover Image URL <span className="text-gray-500 text-sm">(optional)</span>
+            </label>
+            <input
+              id="cover"
+              type="url"
+              value={cover}
+              onChange={(e) => setCover(e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              placeholder="https://example.com/cover.jpg"
+            />
+            {/* Cover Preview */}
+            <div className="mt-3 w-32 h-48 rounded-lg overflow-hidden border border-gray-300">
+              <img 
+                src={cover || DEFAULT_COVER_IMAGE} 
+                alt="Cover preview" 
+                className="w-full h-full object-cover" 
+              />
+            </div>
+            {!cover && <p className="text-xs text-gray-500 mt-2">Using default placeholder image</p>}
           </div>
 
           {/* Review Text Area */}

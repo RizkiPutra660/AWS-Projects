@@ -1,45 +1,50 @@
 import { Star, Clock, Eye, Edit, Trash2 } from 'lucide-react';
 
 interface MediaCardProps {
-  id: number;
+  id: string;
   title: string;
-  type: 'book' | 'movie' | 'game' | 'tv-show' | 'album';
+  type: 'book' | 'movie' | 'game';
   cover: string;
   rating: number;
-  status: 'want-to-consume' | 'consuming' | 'consumed';
+  status: 'want-to-read' | 'reading' | 'read' | 'want-to-watch' | 'watching' | 'watched' | 'want-to-play' | 'playing' | 'played';
   year?: number;
-  onView: (id: number) => void;
-  onEdit: (id: number) => void;
-  onDelete: (id: number) => void;
+  onView: (id: string) => void;
+  onEdit: (id: string) => void;
+  onDelete: (id: string) => void;
 }
 
 export function MediaCard({ id, title, type, cover, rating, status, year, onView, onEdit, onDelete }: MediaCardProps) {
-  const statusColors = {
-    'consumed': 'bg-green-100 text-green-700',
-    'consuming': 'bg-blue-100 text-blue-700',
-    'want-to-consume': 'bg-gray-100 text-gray-700'
+  const getStatusColor = () => {
+    if (status.includes('want-to')) return 'bg-gray-100 text-gray-700';
+    if (status === 'read' || status === 'watched' || status === 'played') return 'bg-green-100 text-green-700';
+    return 'bg-blue-100 text-blue-700'; // reading, watching, playing
   };
 
-  const statusLabels = {
-    'consumed': 'Consumed',
-    'consuming': 'Consuming',
-    'want-to-consume': 'Want to Consume'
-  };
-
-  const typeColors = {
-    book: 'bg-purple-100 text-purple-700',
-    movie: 'bg-orange-100 text-orange-700',
-    'tv-show': 'bg-pink-100 text-pink-700',
-    game: 'bg-teal-100 text-teal-700',
-    album: 'bg-indigo-100 text-indigo-700'
+  const getStatusLabel = () => {
+    const statusMap: Record<string, string> = {
+      'want-to-read': 'Want to Read',
+      'reading': 'Currently Reading',
+      'read': 'Read',
+      'want-to-watch': 'Want to Watch',
+      'watching': 'Currently Watching',
+      'watched': 'Watched',
+      'want-to-play': 'Want to Play',
+      'playing': 'Currently Playing',
+      'played': 'Played'
+    };
+    return statusMap[status] || status;
   };
 
   const typeLabels = {
     book: 'Book',
     movie: 'Movie',
-    'tv-show': 'TV Show',
-    game: 'Game',
-    album: 'Album'
+    game: 'Game'
+  };
+
+  const typeColors = {
+    book: 'bg-purple-100 text-purple-700',
+    movie: 'bg-orange-100 text-orange-700',
+    game: 'bg-teal-100 text-teal-700'
   };
 
   // Render star rating
@@ -79,8 +84,8 @@ export function MediaCard({ id, title, type, cover, rating, status, year, onView
         <div className="space-y-3 mb-4">
           {/* Status Indicator */}
           <div className="flex items-center gap-2">
-            <span className={`px-2 py-1 rounded text-xs ${statusColors[status]}`}>
-              {statusLabels[status]}
+            <span className={`px-2 py-1 rounded text-xs ${getStatusColor()}`}>
+              {getStatusLabel()}
             </span>
           </div>
 

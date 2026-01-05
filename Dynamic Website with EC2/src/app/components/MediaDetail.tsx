@@ -1,12 +1,12 @@
 import { Star, ArrowLeft, Edit } from 'lucide-react';
 
 interface Media {
-  id: number;
+  id: string;
   title: string;
-  type: 'book' | 'movie' | 'game' | 'tv-show' | 'album';
+  type: 'book' | 'movie' | 'game';
   cover: string;
   rating: number;
-  status: 'want-to-consume' | 'consuming' | 'consumed';
+  status: 'want-to-read' | 'reading' | 'read' | 'want-to-watch' | 'watching' | 'watched' | 'want-to-play' | 'playing' | 'played';
   year: number;
   review?: string;
 }
@@ -14,22 +14,29 @@ interface Media {
 interface MediaDetailProps {
   media: Media;
   onBack: () => void;
-  onEdit: (id: number) => void;
+  onEdit: (id: string) => void;
 }
 
 export function MediaDetail({ media, onBack, onEdit }: MediaDetailProps) {
   const typeLabels = {
     book: 'Book',
     movie: 'Movie',
-    'tv-show': 'TV Show',
-    game: 'Game',
-    album: 'Album'
+    game: 'Game'
   };
 
-  const statusLabels = {
-    'consumed': 'Consumed',
-    'consuming': 'Currently Consuming',
-    'want-to-consume': 'Want to Consume'
+  const getStatusLabel = () => {
+    const statusMap: Record<string, string> = {
+      'want-to-read': 'Want to Read',
+      'reading': 'Currently Reading',
+      'read': 'Read',
+      'want-to-watch': 'Want to Watch',
+      'watching': 'Currently Watching',
+      'watched': 'Watched',
+      'want-to-play': 'Want to Play',
+      'playing': 'Currently Playing',
+      'played': 'Played'
+    };
+    return statusMap[media.status] || media.status;
   };
 
   // Render star rating
@@ -108,7 +115,7 @@ export function MediaDetail({ media, onBack, onEdit }: MediaDetailProps) {
                     <span className="text-sm text-gray-600">Status</span>
                   </div>
                   <div className="col-span-2 px-6 py-4 bg-white">
-                    <span>{statusLabels[media.status]}</span>
+                    <span>{getStatusLabel()}</span>
                   </div>
                 </div>
 
