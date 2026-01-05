@@ -2,7 +2,17 @@ import { useState } from 'react';
 import { MediaCard } from './components/MediaCard';
 import { AddMediaForm } from './components/AddMediaForm';
 import { MediaDetail } from './components/MediaDetail';
-import { Plus } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './components/ui/alert-dialog';
 
 interface Media {
   id: number;
@@ -133,6 +143,10 @@ export default function App() {
   const [mediaList, setMediaList] = useState<Media[]>(initialMedia);
   const [showForm, setShowForm] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState<Media | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string>('all');
+  const [editingMedia, setEditingMedia] = useState<Media | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
+  const [mediaToDelete, setMediaToDelete] = useState<Media | null>(null);
 
   const handleAddMedia = (newMedia: Omit<Media, 'id' | 'cover'>) => {
     const placeholderCovers = {
@@ -163,22 +177,68 @@ export default function App() {
   const handleEdit = (id: number) => {
     const media = mediaList.find(m => m.id === id);
     if (media) {
-      alert(`Edit functionality for "${media.title}" would open here.`);
+      setEditingMedia(media);
+      setShowForm(true);
+    }
+  };
+
+  const handleUpdateMedia = (updatedData: Omit<Media, 'id' | 'cover'>) => {
+    if (editingMedia) {
+      const updatedMediaList = mediaList.map(m =>
+        m.id === editingMedia.id
+          ? { ...m, ...updatedData }
+          : m
+      );
+      setMediaList(updatedMediaList);
+      setEditingMedia(null);
+      setShowForm(false);
     }
   };
 
   const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this item?')) {
-      setMediaList(mediaList.filter(m => m.id !== id));
+    const media = mediaList.find(m => m.id === id);
+    if (media) {
+      setMediaToDelete(media);
+      setDeleteConfirmOpen(true);
     }
   };
 
-  // Show form page when adding new media
+  const confirmDelete = () => {
+    if (mediaToDelete) {
+      setMediaList(mediaList.filter(m => m.id !== mediaToDelete.id));
+      setDeleteConfirmOpen(false);
+      setMediaToDelete(null);
+    }
+  };
+
+  // Get category counts
+  const getCategoryCount = (category: string) => {
+    if (category === 'all') return mediaList.length;
+    if (category === 'books') return mediaList.filter(m => m.type === 'book').length;
+    if (category === 'movies') return mediaList.filter(m => m.type === 'movie' || m.type === 'tv-show').length;
+    if (category === 'games') return mediaList.filter(m => m.type === 'game').length;
+    return 0;
+  };
+
+  // Filter media based on selected category
+  const getFilteredMedia = () => {
+    if (selectedFilter === 'all') return mediaList;
+    if (selectedFilter === 'books') return mediaList.filter(m => m.type === 'book');
+    if (selectedFilter === 'movies') return mediaList.filter(m => m.type === 'movie' || m.type === 'tv-show');
+    if (selectedFilter === 'games') return mediaList.filter(m => m.type === 'game');
+    return mediaList;
+  };
+
+  // Show form page when adding new media or editing
   if (showForm) {
     return (
       <AddMediaForm
-        onSubmit={handleAddMedia}
-        onCancel={() => setShowForm(false)}
+        onSubmit={editingMedia ? handleUpdateMedia : handleAddMedia}
+        onCancel={() => {
+          setShowForm(false);
+          setEditingMedia(null);
+        }}
+        initialData={editingMedia || undefined}
       />
     );
   }
@@ -216,9 +276,37 @@ export default function App() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Category Filter */}
+        <div className="mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Filter by Category</h2>
+          <div className="flex flex-wrap gap-3">
+            {[
+              { id: 'all', label: 'All' },
+              { id: 'books', label: 'Books' },
+              { id: 'movies', label: 'Movies' },
+              { id: 'games', label: 'Games' }
+            ].map(category => (
+              <button
+                key={category.id}
+                onClick={() => setSelectedFilter(category.id)}
+                className={`px-6 py-2.5 rounded-lg font-medium transition-colors ${
+                  selectedFilter === category.id
+                    ? 'bg-blue-600 text-white shadow-md'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                {category.label}
+                <span className="ml-2 text-sm font-normal">
+                  ({getCategoryCount(category.id)})
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Media Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {mediaList.map((media) => (
+          {getFilteredMedia().map((media) => (
             <MediaCard
               key={media.id}
               {...media}
@@ -229,12 +317,33 @@ export default function App() {
           ))}
         </div>
 
-        {mediaList.length === 0 && (
+        {getFilteredMedia().length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-500">No media found. Click "Add New" to get started!</p>
+            <p className="text-gray-500">No media found in this category. Click "Add New" to get started!</p>
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Media</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <span className="font-semibold text-gray-900">"{mediaToDelete?.title}"</span>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

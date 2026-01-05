@@ -11,16 +11,25 @@ interface AddMediaFormProps {
     year: number;
   }) => void;
   onCancel: () => void;
+  initialData?: {
+    title: string;
+    type: 'book' | 'movie' | 'tv-show' | 'game' | 'album';
+    status: 'want-to-consume' | 'consuming' | 'consumed';
+    rating: number;
+    review?: string;
+    year: number;
+  };
 }
 
-export function AddMediaForm({ onSubmit, onCancel }: AddMediaFormProps) {
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState<'book' | 'movie' | 'tv-show' | 'game' | 'album'>('book');
-  const [status, setStatus] = useState<'want-to-consume' | 'consuming' | 'consumed'>('want-to-consume');
-  const [rating, setRating] = useState(3);
+export function AddMediaForm({ onSubmit, onCancel, initialData }: AddMediaFormProps) {
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [type, setType] = useState<'book' | 'movie' | 'tv-show' | 'game' | 'album'>(initialData?.type || 'book');
+  const [status, setStatus] = useState<'want-to-consume' | 'consuming' | 'consumed'>(initialData?.status || 'want-to-consume');
+  const [rating, setRating] = useState(initialData?.rating || 3);
   const [hoveredRating, setHoveredRating] = useState(0);
-  const [review, setReview] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [review, setReview] = useState(initialData?.review || '');
+  const [year, setYear] = useState(initialData?.year || new Date().getFullYear());
+  const isEditing = !!initialData;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +55,7 @@ export function AddMediaForm({ onSubmit, onCancel }: AddMediaFormProps) {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <h1 className="text-3xl">Add New Media</h1>
+            <h1 className="text-3xl">{isEditing ? 'Edit Media' : 'Add New Media'}</h1>
             <button
               onClick={onCancel}
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -55,7 +64,7 @@ export function AddMediaForm({ onSubmit, onCancel }: AddMediaFormProps) {
               <X className="w-6 h-6" />
             </button>
           </div>
-          <p className="text-gray-600">Fill in the details below to add a new item to your media tracker.</p>
+          <p className="text-gray-600">{isEditing ? 'Update the details below to edit this media.' : 'Fill in the details below to add a new item to your media tracker.'}</p>
         </div>
 
         {/* Form */}
@@ -214,7 +223,7 @@ export function AddMediaForm({ onSubmit, onCancel }: AddMediaFormProps) {
               type="submit"
               className="flex-1 px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"
             >
-              Submit
+              {isEditing ? 'Update' : 'Submit'}
             </button>
           </div>
         </form>
