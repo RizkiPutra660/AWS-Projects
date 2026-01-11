@@ -2,6 +2,10 @@
 
 A production-ready deployment of a full-stack web application built with React, TypeScript, Node.js, Express, and SQLite, hosted on an Amazon EC2 instance.
 
+Check the Live Demo Here: http://3.107.165.103/
+
+(P.S.: I know it's not a good practice to use an IP number instead of a domain name, but it's just a matter of cost optimisation to me. I don't want to pay for Elastic IP 😁)
+
 ## 🏗️ Project Architecture
 
 This project utilizes a classic three-tier architecture deployed on a single Amazon EC2 instance for simplicity and cost-effectiveness.
