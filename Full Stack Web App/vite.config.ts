@@ -10,6 +10,9 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  build: {
+    outDir: 'build', // This changes the folder from 'dist' to 'build'
+  },
   resolve: {
     alias: {
       // Alias @ to the src directory
