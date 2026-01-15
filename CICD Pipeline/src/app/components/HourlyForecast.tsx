@@ -2,18 +2,18 @@ import { Sun, Cloud, CloudRain, CloudSun } from 'lucide-react';
 
 export function HourlyForecast() {
   const hours = [
-    { time: 'Now', temp: 72, icon: CloudSun },
-    { time: '3 PM', temp: 74, icon: Sun },
-    { time: '4 PM', temp: 75, icon: Sun },
-    { time: '5 PM', temp: 73, icon: CloudSun },
-    { time: '6 PM', temp: 71, icon: Cloud },
-    { time: '7 PM', temp: 69, icon: Cloud },
-    { time: '8 PM', temp: 67, icon: CloudRain },
-    { time: '9 PM', temp: 66, icon: CloudRain },
-    { time: '10 PM', temp: 65, icon: Cloud },
-    { time: '11 PM', temp: 64, icon: Cloud },
-    { time: '12 AM', temp: 63, icon: Cloud },
-    { time: '1 AM', temp: 62, icon: Cloud },
+    { time: 'Now', temp: 22, icon: CloudSun },
+    { time: '15:00', temp: 23, icon: Sun },
+    { time: '16:00', temp: 24, icon: Sun },
+    { time: '17:00', temp: 23, icon: CloudSun },
+    { time: '18:00', temp: 22, icon: Cloud },
+    { time: '19:00', temp: 21, icon: Cloud },
+    { time: '20:00', temp: 19, icon: CloudRain },
+    { time: '21:00', temp: 19, icon: CloudRain },
+    { time: '22:00', temp: 18, icon: Cloud },
+    { time: '23:00', temp: 18, icon: Cloud },
+    { time: '00:00', temp: 17, icon: Cloud },
+    { time: '01:00', temp: 17, icon: Cloud },
   ];
 
   return (

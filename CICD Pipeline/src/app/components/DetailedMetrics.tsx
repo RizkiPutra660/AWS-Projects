@@ -6,11 +6,11 @@ export function DetailedMetrics() {
   const [isOpen, setIsOpen] = useState(false);
 
   const metrics = [
-    { icon: Wind, label: 'Wind Speed', value: '12 mph', detail: 'Northwest', color: 'text-blue-500', bg: 'bg-blue-50' },
+    { icon: Wind, label: 'Wind Speed', value: '19 km/h', detail: 'Northwest', color: 'text-blue-500', bg: 'bg-blue-50' },
     { icon: Droplets, label: 'Humidity', value: '65%', detail: 'Normal', color: 'text-cyan-500', bg: 'bg-cyan-50' },
     { icon: Sun, label: 'UV Index', value: '6', detail: 'High', color: 'text-amber-500', bg: 'bg-amber-50' },
-    { icon: Eye, label: 'Visibility', value: '10 mi', detail: 'Clear', color: 'text-purple-500', bg: 'bg-purple-50' },
-    { icon: Gauge, label: 'Pressure', value: '30.12 in', detail: 'Steady', color: 'text-green-500', bg: 'bg-green-50' },
+    { icon: Eye, label: 'Visibility', value: '16 km', detail: 'Clear', color: 'text-purple-500', bg: 'bg-purple-50' },
+    { icon: Gauge, label: 'Pressure', value: '1019 hPa', detail: 'Steady', color: 'text-green-500', bg: 'bg-green-50' },
     { icon: Compass, label: 'Wind Direction', value: 'NW', detail: '315°', color: 'text-indigo-500', bg: 'bg-indigo-50' },
   ];
 

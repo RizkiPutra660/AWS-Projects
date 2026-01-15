@@ -13,18 +13,18 @@ export function CurrentWeather() {
           
           {/* Temperature */}
           <div className="flex items-start gap-6 mb-8">
-            <div className="text-9xl font-bold text-gray-900 leading-none">72°</div>
+            <div className="text-9xl font-bold text-gray-900 leading-none">22°</div>
             <div className="pt-6">
               <div className="text-3xl font-semibold text-gray-700 mb-2">Partly Cloudy</div>
               <div className="text-lg text-gray-500">
-                H: 78° L: 65°
+                H: 26° L: 18°
               </div>
             </div>
           </div>
           
           {/* Date/Time */}
           <div className="text-base text-gray-500">
-            Monday, January 14 • 2:30 PM
+            Monday, January 14 • 14:30
           </div>
         </div>
         

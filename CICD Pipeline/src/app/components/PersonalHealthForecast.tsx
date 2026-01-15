@@ -30,23 +30,23 @@ const healthConditions: HealthCondition[] = [
     headline: 'High Allergy Alert',
     riskLevel: 'high',
     recommendations: [
-      'Take antihistamines before 10 AM',
-      'Keep windows closed during peak pollen hours (10 AM - 4 PM)',
+      'Take antihistamines before 10:00',
+      'Keep windows closed during peak pollen hours (10:00 - 16:00)',
       'Wear sunglasses outdoors to protect eyes from pollen'
     ],
     metrics: [
       { name: 'Pollen Count', value: 'Very High', level: 'high', percentage: 85, description: 'Tree and grass pollen elevated' },
       { name: 'Humidity', value: '45%', level: 'medium', percentage: 45, description: 'Moderate - ideal for pollen spread' },
-      { name: 'Wind Speed', value: '12 mph', level: 'high', percentage: 60, description: 'Strong winds increase pollen dispersal' },
+      { name: 'Wind Speed', value: '19 km/h', level: 'high', percentage: 60, description: 'Strong winds increase pollen dispersal' },
       { name: 'Air Quality', value: 'Moderate', level: 'medium', percentage: 55, description: 'PM2.5: 35 μg/m³' }
     ],
     hourlyRisk: [
-      { time: '6 AM', risk: 'low' },
-      { time: '9 AM', risk: 'medium' },
-      { time: '12 PM', risk: 'high' },
-      { time: '3 PM', risk: 'high' },
-      { time: '6 PM', risk: 'medium' },
-      { time: '9 PM', risk: 'low' }
+      { time: '06:00', risk: 'low' },
+      { time: '09:00', risk: 'medium' },
+      { time: '12:00', risk: 'high' },
+      { time: '15:00', risk: 'high' },
+      { time: '18:00', risk: 'medium' },
+      { time: '21:00', risk: 'low' }
     ]
   },
   {
@@ -63,16 +63,16 @@ const healthConditions: HealthCondition[] = [
     metrics: [
       { name: 'Barometric Pressure', value: 'Falling', level: 'high', percentage: 75, description: 'Rapid pressure drop detected' },
       { name: 'Humidity', value: '65%', level: 'medium', percentage: 65, description: 'Moderate - can trigger symptoms' },
-      { name: 'Temperature Change', value: '+8°F', level: 'medium', percentage: 60, description: 'Sudden change from yesterday' },
+      { name: 'Temperature Change', value: '+4°C', level: 'medium', percentage: 60, description: 'Sudden change from yesterday' },
       { name: 'UV Index', value: '6 (High)', level: 'high', percentage: 70, description: 'Bright light may trigger headaches' }
     ],
     hourlyRisk: [
-      { time: '6 AM', risk: 'medium' },
-      { time: '9 AM', risk: 'high' },
-      { time: '12 PM', risk: 'high' },
-      { time: '3 PM', risk: 'medium' },
-      { time: '6 PM', risk: 'low' },
-      { time: '9 PM', risk: 'low' }
+      { time: '06:00', risk: 'medium' },
+      { time: '09:00', risk: 'high' },
+      { time: '12:00', risk: 'high' },
+      { time: '15:00', risk: 'medium' },
+      { time: '18:00', risk: 'low' },
+      { time: '21:00', risk: 'low' }
     ]
   },
   {
@@ -89,16 +89,16 @@ const healthConditions: HealthCondition[] = [
     metrics: [
       { name: 'Barometric Pressure', value: 'Stable', level: 'low', percentage: 20, description: 'No significant changes expected' },
       { name: 'Humidity', value: '55%', level: 'low', percentage: 30, description: 'Comfortable range' },
-      { name: 'Temperature', value: '72°F', level: 'low', percentage: 25, description: 'Mild and consistent' },
+      { name: 'Temperature', value: '22°C', level: 'low', percentage: 25, description: 'Mild and consistent' },
       { name: 'Precipitation', value: '0%', level: 'low', percentage: 10, description: 'No rain expected' }
     ],
     hourlyRisk: [
-      { time: '6 AM', risk: 'low' },
-      { time: '9 AM', risk: 'low' },
-      { time: '12 PM', risk: 'low' },
-      { time: '3 PM', risk: 'low' },
-      { time: '6 PM', risk: 'low' },
-      { time: '9 PM', risk: 'low' }
+      { time: '06:00', risk: 'low' },
+      { time: '09:00', risk: 'low' },
+      { time: '12:00', risk: 'low' },
+      { time: '15:00', risk: 'low' },
+      { time: '18:00', risk: 'low' },
+      { time: '21:00', risk: 'low' }
     ]
   },
   {
@@ -109,22 +109,22 @@ const healthConditions: HealthCondition[] = [
     riskLevel: 'high',
     recommendations: [
       'Apply SPF 50+ sunscreen every 2 hours',
-      'Wear protective clothing and seek shade between 10 AM - 4 PM',
+      'Wear protective clothing and seek shade between 10:00 - 16:00',
       'Use moisturizer - low humidity may dry skin'
     ],
     metrics: [
       { name: 'UV Index', value: '8 (Very High)', level: 'high', percentage: 90, description: 'Sunburn risk in 15 minutes' },
       { name: 'Humidity', value: '35%', level: 'high', percentage: 70, description: 'Low - may cause skin dryness' },
       { name: 'Air Quality', value: 'Good', level: 'low', percentage: 15, description: 'PM2.5: 12 μg/m³' },
-      { name: 'Temperature', value: '78°F', level: 'medium', percentage: 50, description: 'Warm - increased sweating' }
+      { name: 'Temperature', value: '26°C', level: 'medium', percentage: 50, description: 'Warm - increased sweating' }
     ],
     hourlyRisk: [
-      { time: '6 AM', risk: 'low' },
-      { time: '9 AM', risk: 'medium' },
-      { time: '12 PM', risk: 'high' },
-      { time: '3 PM', risk: 'high' },
-      { time: '6 PM', risk: 'medium' },
-      { time: '9 PM', risk: 'low' }
+      { time: '06:00', risk: 'low' },
+      { time: '09:00', risk: 'medium' },
+      { time: '12:00', risk: 'high' },
+      { time: '15:00', risk: 'high' },
+      { time: '18:00', risk: 'medium' },
+      { time: '21:00', risk: 'low' }
     ]
   },
   {
@@ -145,12 +145,12 @@ const healthConditions: HealthCondition[] = [
       { name: 'Ozone Level', value: 'Moderate', level: 'medium', percentage: 50, description: '55 ppb - exercise caution' }
     ],
     hourlyRisk: [
-      { time: '6 AM', risk: 'low' },
-      { time: '9 AM', risk: 'medium' },
-      { time: '12 PM', risk: 'high' },
-      { time: '3 PM', risk: 'high' },
-      { time: '6 PM', risk: 'medium' },
-      { time: '9 PM', risk: 'low' }
+      { time: '06:00', risk: 'low' },
+      { time: '09:00', risk: 'medium' },
+      { time: '12:00', risk: 'high' },
+      { time: '15:00', risk: 'high' },
+      { time: '18:00', risk: 'medium' },
+      { time: '21:00', risk: 'low' }
     ]
   }
 ];

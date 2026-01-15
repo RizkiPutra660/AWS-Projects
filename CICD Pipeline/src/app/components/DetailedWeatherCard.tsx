@@ -14,9 +14,9 @@ export function DetailedWeatherCard() {
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+      hour: '2-digit', 
       minute: '2-digit',
-      hour12: true 
+      hour12: false 
     });
   };
 
@@ -48,9 +48,9 @@ export function DetailedWeatherCard() {
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              72
+              22
             </motion.span>
-            <span className="text-6xl font-bold text-gray-400 mt-4">°F</span>
+            <span className="text-6xl font-bold text-gray-400 mt-4">°C</span>
           </div>
 
           {/* Condition Description */}
@@ -151,7 +151,7 @@ export function DetailedWeatherCard() {
             </div>
             <span className="text-sm font-medium text-orange-900">Feels Like</span>
           </div>
-          <p className="text-3xl font-bold text-orange-900">68°</p>
+          <p className="text-3xl font-bold text-orange-900">20°C</p>
           <p className="text-xs text-orange-700 mt-1">Slightly cooler</p>
         </div>
 
@@ -175,7 +175,7 @@ export function DetailedWeatherCard() {
             </div>
             <span className="text-sm font-medium text-blue-900">Wind Speed</span>
           </div>
-          <p className="text-3xl font-bold text-blue-900">12 mph</p>
+          <p className="text-3xl font-bold text-blue-900">19 km/h</p>
           <p className="text-xs text-blue-700 mt-1">Northwest wind</p>
         </div>
       </div>
@@ -184,12 +184,12 @@ export function DetailedWeatherCard() {
       <div className="flex items-center justify-center gap-8 mt-6 pt-6 border-t border-gray-200">
         <div className="text-center">
           <p className="text-sm text-gray-500 mb-1">Today's High</p>
-          <p className="text-2xl font-bold text-gray-900">78°</p>
+          <p className="text-2xl font-bold text-gray-900">26°C</p>
         </div>
         <div className="w-px h-12 bg-gray-300"></div>
         <div className="text-center">
           <p className="text-sm text-gray-500 mb-1">Today's Low</p>
-          <p className="text-2xl font-bold text-gray-900">65°</p>
+          <p className="text-2xl font-bold text-gray-900">18°C</p>
         </div>
       </div>
     </div>
