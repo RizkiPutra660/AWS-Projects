@@ -9,3 +9,4 @@ This repository contains my AWS-focused projects.
 - [Image Recognition Engine](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Image%20Recognition%20Engine)
 - [Intelligent Document Processor](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Intelligent%20Document%20Processor)
 - [RAG-Powered Chatbot](https://github.com/RizkiPutra660/AWS-Projects/tree/main/RAG-Powered%20Chatbot)
+- [End-to-End Machine Learning Pipeline](https://github.com/RizkiPutra660/AWS-Projects/tree/main/End-to-End%20Machine%20Learning%20Pipeline)
