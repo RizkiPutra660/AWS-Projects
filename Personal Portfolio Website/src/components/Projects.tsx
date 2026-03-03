@@ -40,6 +40,13 @@ export function Projects() {
       tags: ['AWS Services', 'Cloud Computing'],
       githubUrl: 'https://github.com/RizkiPutra660/AWS-Projects',
     },
+    {
+      title: 'Test Sphere AI',
+      description: 'AI-powered test automation platform that generates, executes, and tracks unit, integration, API, and UI tests across Python, JavaScript/TypeScript, and Java using Google Gemini.',
+      image: '/projects/testsphereai.png',
+      tags: ['Software Testing', 'Google Gemini', 'Test Automation'],
+      githubUrl: 'https://github.com/RizkiPutra660/TestSphere-AI',
+    },
   ];
 
   return (
