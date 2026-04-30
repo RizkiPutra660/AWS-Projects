@@ -10,3 +10,4 @@ This repository contains my AWS-focused projects.
 - [Intelligent Document Processor](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Intelligent%20Document%20Processor)
 - [RAG-Powered Chatbot](https://github.com/RizkiPutra660/AWS-Projects/tree/main/RAG-Powered%20Chatbot)
 - [End-to-End Machine Learning Pipeline](https://github.com/RizkiPutra660/AWS-Projects/tree/main/End-to-End%20Machine%20Learning%20Pipeline)
+- [Serverless Data Lake](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Serverless%20Data%20Lake)
