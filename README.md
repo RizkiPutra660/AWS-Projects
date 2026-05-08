@@ -11,3 +11,4 @@ This repository contains my AWS-focused projects.
 - [RAG-Powered Chatbot](https://github.com/RizkiPutra660/AWS-Projects/tree/main/RAG-Powered%20Chatbot)
 - [End-to-End Machine Learning Pipeline](https://github.com/RizkiPutra660/AWS-Projects/tree/main/End-to-End%20Machine%20Learning%20Pipeline)
 - [Serverless Data Lake](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Serverless%20Data%20Lake)
+- [Data Warehouse](https://github.com/RizkiPutra660/AWS-Projects/tree/main/Data%20Warehouse)
