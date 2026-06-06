@@ -166,7 +166,7 @@ def main():
         .mode("overwrite") \
         .format("parquet") \
         .option("path", output_path) \
-        .saveAsTable("taxi_db.processed_taxi_hourly")   # also creates/updates table in Glue Catalog
+        .saveAsTable("taxi_db.processed_taxi_hourly") # also creates/updates table in Glue Catalog
 
     spark.stop()
 
@@ -186,15 +186,14 @@ Upload the script to your S3 bucket:
 
 ## Step 5: Create the EMR Serverless application
 
-1. Open **EMR** console → **EMR Serverless** → **Create application**.
+1. Open **EMR** console → **EMR Serverless** → **Open EMR Studio**.
    - **Name**: `taxi-etl-app`
    - **Type**: Spark
-   - **Release version**: `emr-6.10.0` (or the latest available)
+   - **Release version**: the latest available
    - **Architecture**: x86_64
-   - **Initial capacity**: optionally pre‑initialise capacity to speed up your job. I’ll leave it empty for now (cold start takes a couple of minutes).
-   - **Application setup options**: choose **Custom settings**
-     - **Maximum capacity**: 4 vCPUs, 30 GB memory (or lower if you want; this is for small dataset).
-     - Pre‑initialised capacity: 0 (to save cost when idle).
+   - **Application setup options**: choose **Use custom settings**
+     - **Application Limits**: 8 vCPUs, 32 GB memory, 40 GB disk.
+     - Pre‑initialised capacity: Disable **Enable pre-initialized capacity**
    - Leave other defaults (logging enabled, etc.) → **Create application**.
 
 2. Once application is in “Created” state, note the **Application ID**.
@@ -206,9 +205,9 @@ Upload the script to your S3 bucket:
 Before orchestration, ensure the job runs correctly.
 
 1. **Submit a job run from the EMR console:**
-   - Go to the application → **Submit job**.
+   - Go to the application → **Submit sample job run**.
    - **Job name**: `taxi-etl-test`
-   - **Runtime role**: choose `EMRServerlessExecRole` (use the “Browse” button).
+   - **Runtime role**: choose `EMRServerlessExecRole`.
    - **Script location**: `s3://de-project-data-lake-<account-id>/scripts/taxi_etl.py`
    - **Spark properties** (optional): leave empty; the defaults work.
    - **Submit**.
@@ -236,37 +235,55 @@ Create a role `StepFunctionsEMRServerlessRole`:
 - Trusted entity: **Step Functions**
 - Add an inline policy:
   ```json
-  {
-      "Version": "2012-10-17",
-      "Statement": [
-          {
-              "Effect": "Allow",
-              "Action": [
-                  "emr-serverless:StartJobRun",
-                  "emr-serverless:GetJobRun",
-                  "emr-serverless:CancelJobRun"
-              ],
-              "Resource": "arn:aws:emr-serverless:ap-southeast-2:<account-id>:applications/<application-id>"
-          },
-          {
-              "Effect": "Allow",
-              "Action": [
-                  "logs:CreateLogDeliverySubscription",
-                  "logs:PutResourcePolicy",
-                  "logs:DescribeResourcePolicies",
-                  "logs:DescribeLogGroups"
-              ],
-              "Resource": "*"
-          }
-      ]
-  }
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "emr-serverless:StartJobRun",
+                    "emr-serverless:GetJobRun",
+                    "emr-serverless:CancelJobRun"
+                ],
+                "Resource": "arn:aws:emr-serverless:ap-southeast-2:406682760260:applications/*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": "iam:PassRole",
+                "Resource": "arn:aws:iam::406682760260:role/EMRServerlessExecRole"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "logs:CreateLogDelivery",
+                    "logs:GetLogDelivery",
+                    "logs:UpdateLogDelivery",
+                    "logs:DeleteLogDelivery",
+                    "logs:ListLogDeliveries",
+                    "logs:PutResourcePolicy",
+                    "logs:DescribeResourcePolicies",
+                    "logs:DescribeLogGroups"
+                ],
+                "Resource": "*"
+            },
+            {
+                "Effect": "Allow",
+                "Action": [
+                    "events:PutTargets",
+                    "events:PutRule",
+                    "events:DescribeRule"
+                ],
+                "Resource": "arn:aws:events:ap-southeast-2:406682760260:rule/StepFunctions*"
+            }
+        ]
+    }
   ```
   Replace `<application-id>` with the actual ID (you can find it under EMR Serverless, e.g., `00fq5n6h21j9rn09`).
 - Also attach `AmazonS3FullAccess` or a scoped policy to read the script – but it’s better to add a statement allowing `s3:GetObject` on the script bucket. For simplicity, you can add `s3:GetObject` for `arn:aws:s3:::de-project-data-lake-<account-id>/scripts/*`.
 
 ### 7.2 State machine definition
 Go to **Step Functions** → **State machines** → **Create state machine**.
-- Choose **Write your workflow in code** (Amazon States Language).
+- Choose **Write from blank**.
 - Type: **Standard**.
 - Paste the following JSON, replacing placeholders:
 
