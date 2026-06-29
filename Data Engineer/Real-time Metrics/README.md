@@ -1,19 +1,6 @@
 # Real‑Time Metrics with Kinesis Data Analytics (SQL)
 
-Let's build a real‑time streaming analytics pipeline using **Kinesis Data Analytics for SQL**. This project introduces streaming SQL (without the complexity of Flink) and shows how to output results to both a data lake and a live DynamoDB table. It's a perfect two‑star step up from your earlier Kinesis work.
-
-Here's the architecture:
-
-```mermaid
-flowchart LR
-    A[IoT Simulator<br/>Python script] -->|PutRecord| B[Kinesis Data Stream<br/>iot-data-stream]
-    B --> C[Kinesis Data Analytics<br/>SQL Application]
-    C --> D[Output: Aggregated Stream<br/>device-metrics-stream]
-    D --> E[Lambda<br/>Write to DynamoDB]
-    E --> F[DynamoDB Table<br/>DeviceMetrics]
-    C --> G[Kinesis Firehose<br/>Delivery to S3]
-    G --> H[S3: processedData/metrics/]
-```
+Let's build a real‑time streaming analytics pipeline using **Kinesis Data Analytics for SQL**. This project introduces streaming SQL (without the complexity of Flink) and shows how to output results to both a data lake and a live DynamoDB table.
 
 We'll compute a 1‑minute rolling average of temperature and humidity per device, then store both the live results (DynamoDB) and historical archive (S3).
 
@@ -57,116 +44,189 @@ We'll store the latest aggregated metric per device per minute. Use a composite 
    - Capacity mode: On‑demand
 
 2. After creation, enable TTL:
-   - Table → **Additional settings** → **Time to Live (TTL)** → **Manage TTL**.
+   - Table → **Time to Live (TTL)** → **Turn On**.
    - Attribute name: `expire_at` (we'll set this in the Lambda).
-   - Enable.
+   - Turn On TTL.
 
 ---
 
 ## Step 3: Create the Kinesis Data Analytics SQL application
 
-### 3.1 Create the application
+### 3.1 Create the Managed Apache Flink application
 
-1. Open the **Kinesis** console → **Analytics applications** → **SQL applications** → **Create application**.
-   - Application name: `device-metrics-analytics`
-   - Runtime: **SQL**
+1. Open the **Kinesis** console → **Managed Apache Flink** → **Studio Notebook** → **Create Studio Notebook**.
+    - Notebook name: `device-metrics-notebook`
+    - AWS Glue Database: Create New DB
+    - Create Studio Notebook
 
-2. After creation, click on the application → **Real time analytics** → **Go to SQL editor**.
+2. After creation, click the application name → **RUN** → **Open in Apache Zeppelin**
 
-### 3.2 Connect to the source stream
+3. Add Policy for the previously created IAM role when creating notebook.
+- **Add permissions -> Create inline policy**.
+- In JSON tab, paste the code below:
 
-In the SQL editor, under **Source**, you'll see your input stream. If not already connected:
+```JSON
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "kinesis:ListShards",
+                "kinesis:DescribeStream",
+                "kinesis:DescribeStreamSummary",
+                "kinesis:GetRecords",
+                "kinesis:GetShardIterator",
+                "kinesis:PutRecord",
+                "kinesis:PutRecords"
+            ],
+            "Resource": [
+                "arn:aws:kinesis:ap-southeast-2:406682760260:stream/iot-data-stream",
+                "arn:aws:kinesis:ap-southeast-2:406682760260:stream/device-metrics-stream"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "firehose:DescribeDeliveryStream",
+                "firehose:PutRecord",
+                "firehose:PutRecordBatch"
+            ],
+            "Resource": "arn:aws:firehose:ap-southeast-2:406682760260:deliverystream/device-metrics-firehose"
+        }
+    ]
+}
+```
+- Click **Next**, give the policy a name (e.g. `FlinkStreamsAccess`), then **Create Policy**
+- Add Permission again, the choose **Attach Policies**.
+- Search `AWSGlueConsoleFullAccess` -> **Add Permission**
 
-- Click **Add input** → choose the existing `iot-data-stream`.
-- Access permissions: use the default IAM role that Kinesis Analytics creates (or choose an existing role with `kinesis:DescribeStream`, `kinesis:GetRecords`, `kinesis:GetShardIterator`). The wizard will create a role `kinesis-analytics-device-metrics-analytics-<region>`.
+### 3.2 Create the input table for the IoT stream
 
-Wait for the schema to be discovered. The SQL editor will show columns: `device_id`, `temperature`, `humidity`, `timestamp`.
+Before creating the notebook, we need to create new Kinesis Data Stream (`device-metrics-stream`) and Firehose (`device-metrics-firehose`) first as a Sink for output stream. For creating the Firehose:
+1. In the Kinesis Console, click Amazon Data Firehose.
+2. Create Firehose stream.
+3. Source: Choose Direct PUT.
+4. Destination: Amazon S3.
+5. Delivery stream name: `device-metrics-firehose`.
+6. In Destination settings, choose your S3 bucket and set the prefix to processedData/metrics/.
+7. Klik Create Firehose stream.
 
-### 3.3 Define the output streams
-
-We need two destinations:
-- **A Kinesis Data Stream** for Lambda → DynamoDB.
-- **A Firehose delivery stream** for S3.
-
-**Create the output stream for DynamoDB:**
-1. Kinesis Console → **Data Streams** → **Create data stream**.
-   - Name: `device-metrics-stream`
-   - Capacity: On‑demand.
-
-**Create the Firehose delivery stream for S3:**
-1. Kinesis Console → **Delivery streams** → **Create delivery stream**.
-   - Source: **Direct PUT** (Kinesis Analytics will PUT to it).
-   - Destination: **Amazon S3**
-   - Delivery stream name: `device-metrics-firehose`
-   - S3 bucket: `de-project-data-lake-<account-id>`, prefix: `processedData/metrics/`
-   - Buffer size: 1 MiB, Buffer interval: 60 seconds.
-   - IAM role: create/use one with S3 write access.
-
-**Add them as outputs in Kinesis Analytics:**
-- In the SQL editor, click **Add output**:
-  - **Output 1**: Name `DESTINATION_STREAM`, choose `device-metrics-stream`, format JSON.
-  - **Output 2**: Name `DESTINATION_FIREHOSE`, choose `device-metrics-firehose` (from dropdown), format JSON.
-
-### 3.4 Write the real‑time SQL
-
-Paste the following SQL in the editor. It creates two pumps: one for the DynamoDB‑bound stream (latest metric per minute) and one for the Firehose‑bound stream (detailed aggregated records).
+In the notebook, create a new note (e.g., “RealTimeMetrics”). In the first paragraph, define the source table that reads from your existing Kinesis stream `iot-data-stream`. Paste the following Flink SQL and run it:
 
 ```sql
--- Create a stream that aggregates temperature and humidity per device over a 1-minute sliding window
-CREATE OR REPLACE STREAM "DEVICE_METRICS" (
-    "device_id"         VARCHAR(32),
-    "window_start"      TIMESTAMP,
-    "avg_temperature"   DOUBLE,
-    "avg_humidity"      DOUBLE,
-    "record_count"      BIGINT
+%flink.ssql
+
+CREATE TABLE iot_source (
+    device_id    STRING,
+    temperature  DOUBLE,
+    humidity     DOUBLE,
+    `timestamp`  STRING,       -- ISO timestamp, we'll use ROWTIME instead
+    event_time   AS TO_TIMESTAMP(`timestamp`),   -- optional: if you want event time
+    -- Flink adds a proctime attribute
+    proctime AS PROCTIME()
+)
+PARTITIONED BY (device_id)
+WITH (
+    'connector' = 'kinesis',
+    'stream' = 'iot-data-stream',
+    'aws.region' = 'ap-southeast-2',
+    'scan.stream.initpos' = 'LATEST',
+    'format' = 'json'
 );
-
--- Sliding window of 1 minute, advancing by 10 seconds (so updates every 10s)
-CREATE OR REPLACE PUMP "STREAM_PUMP" AS
-INSERT INTO "DEVICE_METRICS"
-SELECT STREAM
-    "device_id",
-    FLOOR("SOURCE_SQL_STREAM_001"."ROWTIME" TO MINUTE) AS "window_start",
-    AVG("temperature") AS "avg_temperature",
-    AVG("humidity") AS "avg_humidity",
-    COUNT(*) AS "record_count"
-FROM "SOURCE_SQL_STREAM_001"
-GROUP BY 
-    "device_id",
-    FLOOR("SOURCE_SQL_STREAM_001"."ROWTIME" TO MINUTE);
-
--- Output to DynamoDB stream (keep only the latest update per window)
-CREATE OR REPLACE PUMP "DYNAMODB_PUMP" AS
-INSERT INTO "DESTINATION_STREAM"
-SELECT STREAM
-    "device_id",
-    "window_start",
-    "avg_temperature",
-    "avg_humidity",
-    "record_count"
-FROM "DEVICE_METRICS";
-
--- Output to Firehose (S3) for historical archive
-CREATE OR REPLACE PUMP "FIREHOSE_PUMP" AS
-INSERT INTO "DESTINATION_FIREHOSE"
-SELECT STREAM
-    "device_id",
-    "window_start",
-    "avg_temperature",
-    "avg_humidity",
-    "record_count"
-FROM "DEVICE_METRICS";
 ```
 
-**Key points:**
-- `ROWTIME` is the timestamp when the record was received by the application.
-- `FLOOR(... TO MINUTE)` truncates to the start of the minute, giving a grouping key.
-- The sliding window is 1 minute wide; the pump fires every time a new record arrives, so the output updates continuously.
-- Two pumps push the same aggregated data to two destinations.
+- Adjust the region to yours.
+- The event_time computed column converts your timestamp string to a SQL timestamp, but we can just use processing time (PROCTIME()) for simplicity.
 
-Click **Save and run** (the play button). The application will start processing. It may take a few seconds to show sample output.
+### 3.3 Create the output tables
 
----
+Define two sink tables – one for the Kinesis stream that goes to Lambda/DynamoDB, and one for the Firehose delivery stream that goes to S3.
+
+**Sink for the Kinesis output stream** (`device-metrics-stream`):
+
+```sql
+%flink.ssql
+
+CREATE TABLE metrics_stream_output (
+    device_id      STRING,
+    window_start   TIMESTAMP(3),
+    avg_temperature DOUBLE,
+    avg_humidity   DOUBLE,
+    record_count   BIGINT
+)
+WITH (
+    'connector' = 'kinesis',
+    'stream' = 'device-metrics-stream',
+    'aws.region' = 'ap-southeast-2',
+    'format' = 'json'
+);
+```
+
+**Sink for the Firehose delivery stream** (`device-metrics-firehose`):
+
+```sql
+%flink.ssql
+
+CREATE TABLE firehose_output (
+    device_id      STRING,
+    window_start   TIMESTAMP(3),
+    avg_temperature DOUBLE,
+    avg_humidity   DOUBLE,
+    record_count   BIGINT
+)
+WITH (
+    'connector' = 'firehose',
+    'delivery-stream' = 'device-metrics-firehose',
+    'aws.region' = 'ap-southeast-2',
+    'format' = 'json'
+);
+```
+### 3.4 Write the streaming aggregation query
+
+Now create a continuous query that aggregates temperature and humidity over a `1‑minute HOP window` (size 1 minute, slide 10 seconds) and inserts the results into both sinks. This replaces the old pump logic.
+
+```sql
+%flink.ssql
+
+INSERT INTO metrics_stream_output
+SELECT
+    device_id,
+    HOP_START(proctime, INTERVAL '10' SECONDS, INTERVAL '1' MINUTE) AS window_start,
+    AVG(temperature) AS avg_temperature,
+    AVG(humidity)   AS avg_humidity,
+    COUNT(*)        AS record_count
+FROM iot_source
+GROUP BY
+    device_id,
+    HOP(proctime, INTERVAL '10' SECONDS, INTERVAL '1' MINUTE);
+```
+
+- `HOP(proctime, slide, size)` defines a sliding window.
+- You can run another `INSERT INTO firehose_output` with the same query to duplicate the data to Firehose. Flink does not support writing to two sinks in the same statement directly; you need two separate INSERT INTO statements.
+
+```SQL
+%flink.ssql
+
+INSERT INTO firehose_output
+SELECT
+    device_id,
+    HOP_START(proctime, INTERVAL '10' SECONDS, INTERVAL '1' MINUTE) AS window_start,
+    AVG(temperature) AS avg_temperature,
+    AVG(humidity)   AS avg_humidity,
+    COUNT(*)        AS record_count
+FROM iot_source
+GROUP BY
+    device_id,
+    HOP(proctime, INTERVAL '10' SECONDS, INTERVAL '1' MINUTE);
+```
+
+Both queries will run continuously once the note is started.
+
+### 3.5 Run the streaming queries
+- In the notebook, make sure your IoT simulator is running and producing data.
+- Click the **Run all paragraphs** button (or run each paragraph individually). The notebook will show a spinning indicator while the query is active.
+- After a minute, you should see the output streams receiving data. You can verify by temporarily querying the output table with a `SELECT * FROM metrics_stream_output LIMIT 10` (use `%flink.ssql`), but note that reading from a Kinesis stream in the same notebook may consume records. It's easier to check via the Lambda and S3 outputs.
 
 ## Step 4: Create the Lambda to write to DynamoDB
 
@@ -174,19 +234,19 @@ We need a Lambda function that reads from `device-metrics-stream`, extracts the 
 
 1. **Lambda → Create function** → Author from scratch.
    - Name: `StoreMetricsToDynamoDB`
-   - Runtime: Python 3.9+
-   - Permissions: Choose **Create a new role with basic Lambda permissions**.
-
-2. After creation, open the role and attach the following managed policies:
+   - Runtime: Python 3.14+
+2. Under Additional Settings, enable Custom execution role. Click Create new role and attach the following managed policies:
    - `AmazonDynamoDBFullAccess` (or a scoped policy for PutItem on `DeviceMetrics`).
    - `AWSLambdaKinesisExecutionRole` (to read from the Kinesis stream).
+3. Create Function
 
-3. Paste the function code:
+4. Paste the function code:
 
 ```python
 import json
 import boto3
 import time
+import base64
 from decimal import Decimal
 
 dynamodb = boto3.resource('dynamodb')
@@ -198,22 +258,32 @@ def float_to_decimal(obj):
         return Decimal(str(obj))
     return obj
 
-def handler(event, context):
+def lambda_handler(event, context):
     for record in event['Records']:
-        # Decode the base64-encoded Kinesis data
-        payload = json.loads(record['kinesis']['data'])
-        # The Kinesis Analytics output includes all fields
-        item = {
-            'device_id': payload['device_id'],
-            'window_start': payload['window_start'],  # e.g., "2024-01-15 10:00:00.0"
-            'avg_temperature': float_to_decimal(payload['avg_temperature']),
-            'avg_humidity': float_to_decimal(payload['avg_humidity']),
-            'record_count': payload['record_count'],
-            # Set TTL to 24 hours from now (in epoch seconds)
-            'expire_at': int(time.time()) + 86400
-        }
-        print(f"Storing item: {item}")
-        table.put_item(Item=item)
+        try:
+            # 1. Buka sandi Base64 dari Kinesis
+            raw_data = record['kinesis']['data']
+            decoded_data = base64.b64decode(raw_data).decode('utf-8')
+            
+            # 2. Ubah string menjadi JSON (Dictionary)
+            payload = json.loads(decoded_data)
+            
+            # 3. Siapkan data untuk DynamoDB
+            item = {
+                'device_id': payload['device_id'],
+                'window_start': str(payload['window_start']),  # Pastikan jadi string
+                'avg_temperature': float_to_decimal(payload['avg_temperature']),
+                'avg_humidity': float_to_decimal(payload['avg_humidity']),
+                'record_count': int(payload['record_count']),
+                'expire_at': int(time.time()) + 86400
+            }
+            print(f"Berhasil menyimpan: {item}")
+            table.put_item(Item=item)
+            
+        except Exception as e:
+            print(f"Error memproses data: {e}")
+            print(f"Data mentah: {record['kinesis']['data']}")
+            
     return {'statusCode': 200}
 ```
 
@@ -225,7 +295,7 @@ def handler(event, context):
    - Kinesis stream: `device-metrics-stream`
    - Batch size: 10
    - Starting position: Latest
-   - Enable.
+   - Add.
 
 Now, as soon as the Kinesis Analytics application starts pumping data into `device-metrics-stream`, the Lambda will populate DynamoDB.
 
